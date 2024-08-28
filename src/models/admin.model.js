@@ -25,7 +25,7 @@ const AdminSchema = mongoose.Schema({
         },
         lowercase: true,
     },
-    mobileNumber: {
+    contact: {
         type: String,
         required: true,
         trim: true,

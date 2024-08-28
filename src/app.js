@@ -5,6 +5,7 @@ const httpStatus = require("http-status");
 const helmet = require("helmet");
 const { errorHandler } = require("./middlewares/error");
 const routes = require("./routes/v1");
+const ApiError = require("./utils/ApiError");
 
 const app = express();
 

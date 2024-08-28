@@ -35,8 +35,9 @@ const getUser = {
  */
 const login = {
     body: Joi.object().keys({
-        email: Joi.string()
-            .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+        contact: Joi.string()
+            .length(10)
+            .pattern(/^[0-9]+$/) // Ensures that the contact is numeric
             .required(),
         password: Joi.string().custom(password, "custom validation").required(),
     }),
