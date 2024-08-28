@@ -1,6 +1,6 @@
 const httpStatus = require("http-status");
 const catchAsync = require("../utils/catchAsync");
-const { authService } = require("../services");
+const { authService, tokenService } = require("../services");
 /**
  * Function performs the following steps:
  * -  Call the authservice to verify is password and email is valid
@@ -31,7 +31,6 @@ const { authService } = require("../services");
  *
  */
 const login = catchAsync(async (req, res) => {
-    console.log("at controller...");
     const { contact, password } = req.body;
     // find admin from authService
     const findAdmin = await authService.loginWithContactAndPassword(
@@ -39,7 +38,9 @@ const login = catchAsync(async (req, res) => {
         password
     );
     // generate token
-    res.send({ admin: findAdmin });
+    const token = await tokenService.generateAuthTokens(findAdmin);
+
+    res.status(httpStatus.OK).send({ admin: findAdmin, tokens: token });
 });
 
 module.exports = {
