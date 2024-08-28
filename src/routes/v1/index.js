@@ -1,9 +1,9 @@
 const express = require("express");
 //subs-routes
-const userRoute = require("./user.route");
+const adminRoute = require("./admin.route");
 
 const router = express.Router();
 
-router.use("/users", userRoute);
+router.use("/admins", adminRoute);
 
 module.exports = router;
