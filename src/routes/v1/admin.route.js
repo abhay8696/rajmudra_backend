@@ -1,11 +1,9 @@
 const express = require("express");
-const { getAdminByContact } = require("../../services/admin.service");
+const { adminController } = require("../../controllers");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-    const getAdmin = await getAdminByContact(req.body.contact);
-    res.send(getAdmin);
-});
-
+router.post("/new", adminController.createAdmin);
+router.get("/contact", adminController.getAdminByContact);
+router.get("/:id", adminController.getAdminById);
 module.exports = router;

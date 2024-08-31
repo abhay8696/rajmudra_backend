@@ -103,6 +103,16 @@ AdminSchema.statics.isEmailTaken = async function (email) {
 };
 
 /**
+ * Check if contact is taken
+ * @param {string} contact - The user's contact
+ * @returns {Promise<boolean>}
+ */
+AdminSchema.statics.isContactTaken = async function (contact) {
+    let result = await this.findOne({ contact: contact });
+    return !!result;
+};
+
+/**
  * Check if entered password matches the user's password
  * @param {string} password
  * @returns {Promise<boolean>}

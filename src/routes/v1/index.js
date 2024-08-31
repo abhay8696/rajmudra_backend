@@ -6,7 +6,7 @@ const shopRoute = require("./shop.route");
 
 const router = express.Router();
 
-router.use("/admins", adminRoute);
+router.use("/admin", adminRoute);
 router.use("/auth", authRoute);
 router.use("/shop", shopRoute);
 
