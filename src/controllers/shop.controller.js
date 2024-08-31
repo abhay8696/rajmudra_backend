@@ -84,7 +84,7 @@ const getAllShops = catchAsync(async (req, res) => {
  */
 const updateShop = catchAsync(async (req, res) => {
     // console.log(req.params);
-    const shop = await shopService.updateShop(req.body, req.params.id);
+    const shop = await shopService.updateShop(req.params.id, req.body);
 
     res.status(httpStatus.ACCEPTED).send(shop);
 });

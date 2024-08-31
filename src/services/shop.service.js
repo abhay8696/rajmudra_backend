@@ -20,14 +20,14 @@ const config = require("../config/config");
  *
  * userBody example:
  * {
- *  "tenantName": "john Snow",
+ *  "ownerName": "john Snow",
  *  "shopNo": "s-25"
  * }
  *
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
 const createShop = async (newShop) => {
-    const { tenantName, shopNo } = newShop;
+    const { ownerName, shopNo } = newShop;
 
     // check if shopNo is unique
     const isShopNoTaken = await Shop.isShopNoTaken(shopNo);
@@ -91,33 +91,40 @@ const getAllShops = async () => {
  * @returns {Promise<Shop>}
  * @throws {ApiError}
  */
-const updateShop = async (updatedShop, id) => {
+const updateShop = async (shopId, updateData) => {
     try {
-        let oldShop = await Shop.findById(id);
-        if (oldShop) {
-            oldShop.tenantName = updatedShop.tenantName;
-            if (oldShop.shopNo != updatedShop.shopNo) {
-                //it means shopNo of shop is to be updated
-                // check if shopNo is unique
-                const isShopNoTaken = await Shop.isShopNoTaken(
-                    updatedShop.shopNo
+        // If the update includes shopNo, check if it's already taken
+        if (updateData.shopNo) {
+            const isTaken = await Shop.isShopNoTaken(updateData.shopNo);
+            if (isTaken) {
+                throw new Error(
+                    `Shop number ${updateData.shopNo} is already taken.`
                 );
-
-                if (isShopNoTaken) {
-                    throw new ApiError(
-                        httpStatus.OK,
-                        `${updatedShop.shopNo} already taken`
-                    );
-                }
-                oldShop.shopNo = updatedShop.shopNo;
             }
-
-            await oldShop.save();
-
-            return oldShop;
         }
 
-        throw new ApiError(httpStatus.NOT_FOUND, "Shop does not exist");
+        // If the update includes registrationNo, check if it's already taken
+        if (updateData.registrationNo) {
+            const isTaken = await Shop.isRegistrationNoTaken(
+                updateData.registrationNo
+            );
+            if (isTaken) {
+                throw new Error(
+                    `Registration number ${updateData.registrationNo} is already taken.`
+                );
+            }
+        }
+        const updatedShop = await Shop.findByIdAndUpdate(
+            shopId,
+            { $set: updateData },
+            { new: true }
+        );
+
+        if (updatedShop) {
+            return updatedShop;
+        } else {
+            throw new ApiError(httpStatus.NOT_FOUND, "Shop not found");
+        }
     } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
     }
