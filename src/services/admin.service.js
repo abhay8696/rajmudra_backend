@@ -52,6 +52,22 @@ const createAdmin = async (newAdmin) => {
 };
 
 /**
+ * Fetches all admin for a admin/super-admin
+ * - Fetch all admin from Mongo
+ *
+ * @returns {Promise<admin>}
+ * @throws {ApiError}
+ */
+const getAllAdmins = async () => {
+    try {
+        let allAdmins = await Admin.find();
+        return allAdmins;
+    } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+    }
+};
+
+/**
  * Fetches admin for a admin/super-admin
  * - Fetch admin from Mongo
  * - If admin doesn't exist, throw ApiError
@@ -90,4 +106,71 @@ const getAdminByContact = async (contact) => {
     }
 };
 
-module.exports = { createAdmin, getAdminById, getAdminByContact };
+/**
+ * Updates the admin with new admin object
+ * - Fetch all admins from Mongo
+ *
+ * @param {Admin} updatedAdmin
+ * @param {string} id
+ * @returns {Promise<Admin>}
+ * @throws {ApiError}
+ */
+const updateAdmin = async (adminId, updateData) => {
+    try {
+        // If the update includes contact, check if it's already taken
+        if (updateData.contact) {
+            const isTaken = await Admin.isContactTaken(updateData.contact);
+            if (isTaken) {
+                throw new Error(
+                    `Contact ${updateData.contact} is already taken.`
+                );
+            }
+        }
+
+        // If the update includes email, check if it's already taken
+        if (updateData.email) {
+            const isTaken = await Admin.isEmailTaken(updateData.email);
+            if (isTaken) {
+                throw new Error(`Email ${updateData.email} is already taken.`);
+            }
+        }
+        const updatedAdmin = await Admin.findByIdAndUpdate(
+            adminId,
+            { $set: updateData },
+            { new: true }
+        );
+
+        if (updatedAdmin) {
+            return updatedAdmin;
+        } else {
+            throw new ApiError(httpStatus.NOT_FOUND, "Admin not found");
+        }
+    } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+    }
+};
+/**
+ * Delete Admin
+ *
+ * @param {string} id
+ * @returns {null}
+ * @throws {ApiError}
+ */
+const deleteAdmin = async (id) => {
+    try {
+        const result = await Admin.deleteOne({ _id: id });
+        // console.log({ result });
+        if (result.deletedCount === 1) return true;
+        else throw new ApiError(httpStatus.NOT_FOUND, `Admin not found`);
+    } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+    }
+};
+module.exports = {
+    createAdmin,
+    getAllAdmins,
+    getAdminById,
+    getAdminByContact,
+    updateAdmin,
+    deleteAdmin,
+};

@@ -101,4 +101,5 @@ const deleteShop = catchAsync(async (req, res) => {
 
     res.status(httpStatus.OK).send({ message: "Shop deleted successfully!" });
 });
+
 module.exports = { getShop, createShop, getAllShops, updateShop, deleteShop };
