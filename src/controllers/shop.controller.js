@@ -41,35 +41,6 @@ const getShop = catchAsync(async (req, res) => {
 });
 
 /**
- * Fetch all the shops
- *
- * Example response:
- * HTTP 200 OK
- *  ARRAY: [
- *      OBJECT: {
-            "_id": "66d20cc42171142aaa6bc907",
-            "tenantName": "Jake Peralta",
-            "shopNo": "s-01",
-            "__v": 0
-        },
- *      OBJECT: {
-            "_id": "66d20cc42171142aaa6bc907",
-            "tenantName": "Jake Peralta",
-            "shopNo": "s-01",
-            "__v": 0
-        },
-        ...
- * ]
- *
- */
-const getAllShops = catchAsync(async (req, res) => {
-    // console.log(req.params);
-    const allShops = await shopService.getAllShops();
-
-    res.status(httpStatus.OK).send(allShops);
-});
-
-/**
  * Update the shop details by id
  *
  * Example response:
@@ -102,4 +73,4 @@ const deleteShop = catchAsync(async (req, res) => {
     res.status(httpStatus.OK).send({ message: "Shop deleted successfully!" });
 });
 
-module.exports = { getShop, createShop, getAllShops, updateShop, deleteShop };
+module.exports = { getShop, createShop, updateShop, deleteShop };

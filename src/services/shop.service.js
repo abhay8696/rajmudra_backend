@@ -27,20 +27,30 @@ const config = require("../config/config");
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
 const createShop = async (newShop) => {
-    const { ownerName, shopNo } = newShop;
+    const { ownerName, shopNo, registrationNo } = newShop;
 
-    // check if shopNo is unique
-    const isShopNoTaken = await Shop.isShopNoTaken(shopNo);
-
-    if (isShopNoTaken) {
-        throw new ApiError(httpStatus.OK, `${shopNo} already taken`);
-    } else {
-        try {
-            const newPost = await Shop.create(newShop);
-            return newPost;
-        } catch (error) {
-            throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+    try {
+        //check if registration no is unique
+        const isTaken = await Shop.isRegistrationNoTaken(registrationNo);
+        if (isTaken) {
+            throw new ApiError(
+                httpStatus.CONFLICT,
+                `Registration number ${registrationNo} is already taken.`
+            );
         }
+
+        // check if shopNo is unique
+        const isShopNoTaken = await Shop.isShopNoTaken(shopNo);
+        if (isShopNoTaken) {
+            throw new ApiError(httpStatus.CONFLICT, `${shopNo} already taken`);
+        }
+
+        const newPost = await Shop.create(newShop);
+        return newPost;
+    } catch (error) {
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 
@@ -57,28 +67,19 @@ const createShop = async (newShop) => {
  */
 const getShopById = async (id) => {
     try {
-        let getShop = await Shop.findById(id);
-        if (getShop) return getShop;
+        let shop;
+        if (id === "all") shop = await Shop.find();
+        else shop = await Shop.findById(id);
+        console.log(shop);
 
-        throw new ApiError(httpStatus.NOT_FOUND, "Shop does not exist");
+        if (!shop) {
+            throw new ApiError(httpStatus.NOT_FOUND, "Shop does not exist");
+        }
+        return shop;
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
-    }
-};
-
-/**
- * Fetches all shops for a admin/super-admin
- * - Fetch all shops from Mongo
- *
- * @returns {Promise<Shops>}
- * @throws {ApiError}
- */
-const getAllShops = async () => {
-    try {
-        let allShops = await Shop.find();
-        return allShops;
-    } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 
@@ -97,7 +98,8 @@ const updateShop = async (shopId, updateData) => {
         if (updateData.shopNo) {
             const isTaken = await Shop.isShopNoTaken(updateData.shopNo);
             if (isTaken) {
-                throw new Error(
+                throw new ApiError(
+                    httpStatus.CONFLICT,
                     `Shop number ${updateData.shopNo} is already taken.`
                 );
             }
@@ -109,7 +111,8 @@ const updateShop = async (shopId, updateData) => {
                 updateData.registrationNo
             );
             if (isTaken) {
-                throw new Error(
+                throw new ApiError(
+                    httpStatus.CONFLICT,
                     `Registration number ${updateData.registrationNo} is already taken.`
                 );
             }
@@ -126,7 +129,9 @@ const updateShop = async (shopId, updateData) => {
             throw new ApiError(httpStatus.NOT_FOUND, "Shop not found");
         }
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 
@@ -144,13 +149,14 @@ const deletShop = async (id) => {
         if (result.deletedCount === 1) return true;
         else throw new ApiError(httpStatus.NOT_FOUND, `shop not found`);
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 module.exports = {
     createShop,
     getShopById,
-    getAllShops,
     updateShop,
     deletShop,
 };

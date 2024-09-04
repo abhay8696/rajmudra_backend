@@ -41,13 +41,15 @@ const createAdmin = async (newAdmin) => {
         if (isContactTaken || isEmailTaken) {
             let errName;
             isContactTaken ? (errName = contact) : (errName = email);
-            throw new ApiError(httpStatus.OK, `${errName} already taken`);
+            throw new ApiError(httpStatus.CONFLICT, `${errName} already taken`);
         }
 
         const admin = await Admin.create(newAdmin);
         return admin;
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 
@@ -63,7 +65,9 @@ const getAllAdmins = async () => {
         let allAdmins = await Admin.find();
         return allAdmins;
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 
@@ -85,7 +89,9 @@ const getAdminById = async (id) => {
 
         throw new ApiError(httpStatus.NOT_FOUND, "admin does not exist");
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 
@@ -99,10 +105,13 @@ const getAdminById = async (id) => {
 const getAdminByContact = async (contact) => {
     try {
         let getAdmin = await Admin.findOne({ contact: contact });
-        // console.log(getAdmin);
-        return getAdmin;
+        if (getAdmin) return getAdmin;
+
+        throw new ApiError(httpStatus.NOT_FOUND, "admin does not exist");
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 
@@ -121,7 +130,8 @@ const updateAdmin = async (adminId, updateData) => {
         if (updateData.contact) {
             const isTaken = await Admin.isContactTaken(updateData.contact);
             if (isTaken) {
-                throw new Error(
+                throw new ApiError(
+                    httpStatus.CONFLICT,
                     `Contact ${updateData.contact} is already taken.`
                 );
             }
@@ -131,7 +141,10 @@ const updateAdmin = async (adminId, updateData) => {
         if (updateData.email) {
             const isTaken = await Admin.isEmailTaken(updateData.email);
             if (isTaken) {
-                throw new Error(`Email ${updateData.email} is already taken.`);
+                throw new ApiError(
+                    httpStatus.CONFLICT,
+                    `Email ${updateData.email} is already taken.`
+                );
             }
         }
         const updatedAdmin = await Admin.findByIdAndUpdate(
@@ -146,7 +159,9 @@ const updateAdmin = async (adminId, updateData) => {
             throw new ApiError(httpStatus.NOT_FOUND, "Admin not found");
         }
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 /**
@@ -163,7 +178,9 @@ const deleteAdmin = async (id) => {
         if (result.deletedCount === 1) return true;
         else throw new ApiError(httpStatus.NOT_FOUND, `Admin not found`);
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error);
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
     }
 };
 module.exports = {

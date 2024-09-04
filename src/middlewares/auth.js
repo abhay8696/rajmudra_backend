@@ -21,7 +21,13 @@ const verifyCallback = (req, resolve, reject) => async (err, admin, info) => {
     if (admin) {
         req.admin = admin;
         resolve();
-    } else reject(new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate"));
+    } else
+        reject(
+            new ApiError(
+                httpStatus.UNAUTHORIZED,
+                "Please authenticate, try logging in again"
+            )
+        );
 };
 
 /**
