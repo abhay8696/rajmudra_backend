@@ -25,9 +25,9 @@ app.use(compression());
 app.use(cors());
 app.options("*", cors());
 
-app.use(errorHandler);
-
 app.use("/v1", routes);
+
+app.use(errorHandler);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

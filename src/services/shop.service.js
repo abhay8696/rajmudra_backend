@@ -37,12 +37,24 @@ const createShop = async (newShop) => {
                 httpStatus.CONFLICT,
                 `Registration number ${registrationNo} is already taken.`
             );
+
+            // return {
+            //     error: true,
+            //     statusCode: httpStatus.CONFLICT,
+            //     message: `Registration number ${registrationNo} is already taken.`,
+            // };
         }
 
         // check if shopNo is unique
         const isShopNoTaken = await Shop.isShopNoTaken(shopNo);
         if (isShopNoTaken) {
             throw new ApiError(httpStatus.CONFLICT, `${shopNo} already taken`);
+
+            // return {
+            //     error: true,
+            //     statusCode: httpStatus.CONFLICT,
+            //     message: `${shopNo} already taken`,
+            // };
         }
 
         const newPost = await Shop.create(newShop);
@@ -50,7 +62,8 @@ const createShop = async (newShop) => {
     } catch (error) {
         let code = error.statusCode;
         if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
-        throw new ApiError(code, error);
+
+        throw new ApiError(code, error.message);
     }
 };
 
