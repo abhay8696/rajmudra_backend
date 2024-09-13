@@ -18,9 +18,6 @@ const { shopService } = require("../services");
 const createShop = catchAsync(async (req, res) => {
     const create = await shopService.createShop(req.body);
 
-    // if (create.error) {
-    //     res.status(httpStatus.CREATED).send({ create,  });
-    // } else
     res.status(httpStatus.CREATED).send(create);
 });
 
