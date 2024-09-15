@@ -41,6 +41,24 @@ const getShop = catchAsync(async (req, res) => {
 });
 
 /**
+ * Fetch the shop condtion like (shopNo, registrationNo, ownerName, etc)
+ *
+ * Example response:
+ * HTTP 200 OK
+ *  ARRAY: [ shopObject, shopObject, ... ]
+ *
+ */
+const getShopsByCondition = catchAsync(async (req, res) => {
+    // console.log(req.params);
+    const shops = await shopService.getShopsByCondition(
+        req.params.key,
+        req.params.val
+    );
+
+    res.status(httpStatus.OK).send(shops);
+});
+
+/**
  * Update the shop details by id
  *
  * Example response:
@@ -73,4 +91,10 @@ const deleteShop = catchAsync(async (req, res) => {
     res.status(httpStatus.OK).send({ message: "Shop deleted successfully!" });
 });
 
-module.exports = { getShop, createShop, updateShop, deleteShop };
+module.exports = {
+    getShop,
+    getShopsByCondition,
+    createShop,
+    updateShop,
+    deleteShop,
+};

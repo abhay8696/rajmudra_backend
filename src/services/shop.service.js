@@ -35,14 +35,17 @@ const createShop = async (newShop) => {
         if (isTaken) {
             throw new ApiError(
                 httpStatus.CONFLICT,
-                `Registration number ${registrationNo} is already taken.`
+                `Registration number "${registrationNo}" is already taken.`
             );
         }
 
         // check if shopNo is unique
         const isShopNoTaken = await Shop.isShopNoTaken(shopNo);
         if (isShopNoTaken) {
-            throw new ApiError(httpStatus.CONFLICT, `${shopNo} already taken`);
+            throw new ApiError(
+                httpStatus.CONFLICT,
+                `Shop "${shopNo}" is already taken`
+            );
         }
 
         const newPost = await Shop.create(newShop);
@@ -84,6 +87,35 @@ const getShopById = async (id) => {
     }
 };
 
+/**
+ * Fetches shops for a admin/super-admin
+ * - Fetch shops from Mongo
+ * - returns array of shops
+ * - If shop doesn't exist, return empty array
+ *
+ * @param {Shop object key}
+ * @param {Shop param}
+ * @returns {Promise<Shop>}
+ * @throws {ApiError}
+ */
+
+const getShopsByCondition = async (key, val) => {
+    try {
+        let shops;
+
+        shops = await Shop.find({ [key]: val });
+        // console.log(shops);
+
+        if (!shops) {
+            throw new ApiError(httpStatus.NOT_FOUND, `Shops not found.`);
+        }
+        return shops;
+    } catch (error) {
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error);
+    }
+};
 /**
  * Updates the shop with new shop object
  * - Fetch all shops from Mongo
@@ -158,6 +190,7 @@ const deletShop = async (id) => {
 module.exports = {
     createShop,
     getShopById,
+    getShopsByCondition,
     updateShop,
     deletShop,
 };

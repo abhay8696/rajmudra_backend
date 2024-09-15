@@ -9,6 +9,9 @@ const router = express.Router();
 // Create a new shop
 router.post("/new", auth, shopController.createShop);
 
+// Get a shops by condition
+router.get("/condition/:key/:val", auth, shopController.getShopsByCondition);
+
 // Get a specific shop by ID
 router.get("/:id", auth, shopController.getShop);
 
