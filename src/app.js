@@ -27,11 +27,16 @@ app.options("*", cors());
 
 app.use("/v1", routes);
 
-app.use(errorHandler);
-
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
-    next(new ApiError(httpStatus.NOT_FOUND, "Not found, MSG source: app.js"));
+    next(
+        new ApiError(
+            httpStatus.NOT_FOUND,
+            "Unknown api request, please check endpoint URL."
+        )
+    );
 });
+
+app.use(errorHandler);
 
 module.exports = app;
