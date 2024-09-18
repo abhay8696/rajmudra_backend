@@ -1,32 +1,33 @@
 {
-  "name": "rajmudra_backend",
-  "version": "1.0.0",
-  "description": "\"Backend for Rajmudra Food Junction Software Project\"",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/index.js"
-  },
-  "author": "abhay8696",
-  "license": "ISC",
-  "devDependencies": {
-    "mockingoose": "^2.16.2",
-    "nodemon": "^3.1.4"
-  },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "compression": "^1.7.4",
-    "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "helmet": "^7.1.0",
-    "http-status": "^1.7.4",
-    "joi": "^17.13.3",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.5.4",
-    "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1",
-    "validator": "^13.12.0"
-  }
+    "name": "rajmudra_backend",
+    "version": "1.0.0",
+    "description": "\"Backend for Rajmudra Food Junction Software Project\"",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon src/index.js",
+        "build": "express build --output public"
+    },
+    "author": "abhay8696",
+    "license": "ISC",
+    "devDependencies": {
+        "mockingoose": "^2.16.2",
+        "nodemon": "^3.1.4"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "compression": "^1.7.4",
+        "cors": "^2.8.5",
+        "cross-env": "^7.0.3",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "helmet": "^7.1.0",
+        "http-status": "^1.7.4",
+        "joi": "^17.13.3",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.5.4",
+        "passport": "^0.7.0",
+        "passport-jwt": "^4.0.1",
+        "validator": "^13.12.0"
+    }
 }

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const config = require("./config/config");
 const app = require("./app");
 
+console.log("index.js");
 //Mongo connection and get the express app to listen on config.port
 mongoose
     .connect(config.mongoose.url, {
