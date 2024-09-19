@@ -10,7 +10,7 @@ const envVarsSchema = Joi.object()
         NODE_ENV: Joi.string()
             .valid("production", "development", "test")
             .required(),
-        PORT: Joi.number().default(3000),
+        PORTT: Joi.number().default(3000),
         MONGODB_URL: Joi.string().required().description("Mongo DB url"),
         JWT_SECRET: Joi.string().required().description("JWT secret key"),
         JWT_ACCESS_EXPIRATION_MINUTES: Joi.number()
@@ -27,9 +27,19 @@ if (error) {
     throw new Error(`Config validation error: ${error.message}`);
 }
 
+//Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCgAQFmH6psRZIqmMNhcnvYZxcYsNl9TbA",
+    authDomain: "rajmudra-3eb6c.firebaseapp.com",
+    projectId: "rajmudra-3eb6c",
+    storageBucket: "rajmudra-3eb6c.appspot.com",
+    messagingSenderId: "273374375297",
+    appId: "1:273374375297:web:8bf520ac51e3e862428c80",
+};
+
 module.exports = {
     env: envVars.NODE_ENV,
-    port: envVars.PORT,
+    port: envVars.PORTT,
     // Set mongoose configuration
     mongoose: {
         url: envVars.MONGODB_URL + (envVars.NODE_ENV === "test" ? "-test" : ""),
@@ -42,5 +52,10 @@ module.exports = {
     jwt: {
         secret: envVars.JWT_SECRET,
         accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
+    },
+    firebase: {
+        porjectId: envVars.PROJECT_ID,
+        clientEmail: envVars.CLIENT_EMAIL,
+        privateKey: envVars.PRIVATE_KEY,
     },
 };
