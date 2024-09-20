@@ -73,7 +73,7 @@ const getShopById = async (id) => {
     try {
         let shop;
         if (id === "all") shop = await Shop.find();
-        else shop = await Shop.findById(id);
+        else shop = await Shop.findById(id).populate("paymentHistory");
         console.log(shop);
 
         if (!shop) {

@@ -12,12 +12,12 @@ const PaymentSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-    shop: {
-        type: Schema.Types.ObjectId, // Reference to the Shops collection
+    shopId: {
+        type: mongoose.Schema.Types.ObjectId, // Reference to the Shops collection
         ref: "Shop",
         required: true,
     },
-    method: {
+    paymentMethod: {
         type: String,
         required: true,
     },

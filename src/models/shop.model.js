@@ -58,7 +58,7 @@ const ShopSchema = mongoose.Schema(
         },
         paymentHistory: [
             {
-                type: Schema.Types.ObjectId, // Reference to the Payments collection
+                type: mongoose.Schema.Types.ObjectId, // Reference to the Payments collection
                 ref: "Payment",
             },
         ],
