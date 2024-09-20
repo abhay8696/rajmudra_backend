@@ -107,11 +107,11 @@ const getAdminByContact = async (contact) => {
         let getAdmin = await Admin.findOne({ contact: contact });
         if (getAdmin) return getAdmin;
 
-        throw new ApiError(httpStatus.NOT_FOUND, "admin does not exist");
+        throw new ApiError(httpStatus.NOT_FOUND, "Admin does not exist");
     } catch (error) {
         let code = error.statusCode;
         if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
-        throw new ApiError(code, error);
+        throw new ApiError(code, error.message);
     }
 };
 
