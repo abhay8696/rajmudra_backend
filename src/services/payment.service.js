@@ -52,4 +52,149 @@ const createPayment = async (paymentObject) => {
     }
 };
 
-module.exports = { createPayment };
+// Function to get payment by id
+/**
+ *
+ *  - check if the payment with the id exists
+ *  - If not throw an error using the `ApiError` class. Pass two arguments to the constructor,
+ *    1. “200 OK status code using `http-status` library
+ *    2. An error message, payment does not exist”
+ *  - Otherwise, return a that Payment object
+ *
+ * @param {String} req.param.id
+ * @returns {Promise<Payment>}
+ * @throws {ApiError}
+ *
+ * paymentBody example:
+ * {
+ * "amount" = 500,
+ * "shopId" = '614b1b5f1a0b5c7d481c9f90',
+ * "paymentMethod" = 'credit',
+ * "date" = Date
+ * }
+ *
+ * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
+ */
+const getPaymentById = async (paymentId) => {
+    try {
+        const payment = await Payment.findById(paymentId);
+
+        if (payment) return payment;
+
+        throw new ApiError(
+            httpStatus.OK,
+            "Payment with this id does not exist"
+        );
+    } catch (error) {
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+
+        throw new ApiError(code, error?.message || "Internal Server Error");
+    }
+};
+
+// Function to get payments by condition (amount, value) or (shop, value) or (paymentMedhod, value) or (datevalue)
+/**
+ *
+ *  - fetch using Payment.find()
+ *  - If not found return empty array
+ *  - Otherwise, return array of Payment objects
+ *
+ * @param {String, String} req.params.key, req.params.value
+ * @returns {Promise<Payment>}
+ * @throws {ApiError}
+ *
+ * paymentBody example:
+ *  [
+ *      {
+ *      "amount" = 500,
+ *      "shopId" = '614b1b5f1a0b5c7d481c9f90',
+ *      "paymentMethod" = 'credit',
+ *      "date" = Date
+ *      },
+ *      {
+ *      "amount" = 500,
+ *      "shopId" = '614b1b5f1a0b5c7d481c9f90',
+ *      "paymentMethod" = 'credit',
+ *      "date" = Date
+ *      }, ...
+ *  ]
+ *
+ * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
+ */
+const getPaymentByCondition = async (key, val) => {
+    try {
+        let payments;
+
+        payments = await Payment.find({ [key]: val });
+        // console.log(payments);
+
+        if (!payments) {
+            throw new ApiError(httpStatus.NOT_FOUND, `Payments not found.`);
+        }
+        return payments;
+    } catch (error) {
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+
+        throw new ApiError(code, error?.message || "Internal Server Error");
+    }
+};
+
+/**
+ * Updates the shop with new shop object
+ * - Fetch all shops from Mongo
+ *
+ * @param {string} id
+ * @param {Shop} updatedPayment
+ * @returns {Promise<Shop>}
+ * @throws {ApiError}
+ */
+const updatePayment = async (paymentId, updateData) => {
+    try {
+        const updatedPayment = await Payment.findByIdAndUpdate(
+            paymentId,
+            { $set: updateData },
+            { new: true }
+        );
+
+        if (updatedPayment) {
+            return updatedPayment;
+        } else {
+            throw new ApiError(httpStatus.NOT_FOUND, "Payment not found");
+        }
+    } catch (error) {
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+
+        throw new ApiError(code, error?.message || "Internal Server Error");
+    }
+};
+
+/**
+ * Delete Payment
+ *
+ * @param {string} id
+ * @returns {null}
+ * @throws {ApiError}
+ */
+const deletePayment = async (id) => {
+    try {
+        const result = await Payment.deleteOne({ _id: id });
+
+        if (result.deletedCount === 1) return true;
+        else throw new ApiError(httpStatus.NOT_FOUND, `Payment not found`);
+    } catch (error) {
+        let code = error.statusCode;
+        if (!code) code = httpStatus.INTERNAL_SERVER_ERROR;
+        throw new ApiError(code, error.message);
+    }
+};
+
+module.exports = {
+    createPayment,
+    getPaymentById,
+    getPaymentByCondition,
+    updatePayment,
+    deletePayment,
+};

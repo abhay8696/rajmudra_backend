@@ -87,6 +87,7 @@ const getShopById = async (id) => {
     }
 };
 
+// Function to get shops by condition e.g=> (ownerName, value) or (shopNo, value) etc
 /**
  * Fetches shops for a admin/super-admin
  * - Fetch shops from Mongo
