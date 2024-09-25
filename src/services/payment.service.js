@@ -34,9 +34,16 @@ const createPayment = async (paymentObject) => {
         //find shop
         const getShop = await Shop.find({ shopNo: shopNo });
 
-        if (!getShop) throw new ApiError(httpStatus.OK, "Shop does not exist");
+        if (!getShop)
+            throw new ApiError(
+                httpStatus.NOT_FOUND,
+                `Shop ${shopNo} does not exist`
+            );
         if (!getShop.length)
-            throw new ApiError(httpStatus.OK, "Shop does not exist, []");
+            throw new ApiError(
+                httpStatus.NOT_FOUND,
+                `Shop ${shopNo} does not exist`
+            );
 
         const newPayment = await Payment.create({
             ...paymentObject,
@@ -89,7 +96,7 @@ const getPaymentById = async (paymentId) => {
         if (payment) return payment;
 
         throw new ApiError(
-            httpStatus.OK,
+            httpStatus.NOT_FOUND,
             "Payment with this id does not exist"
         );
     } catch (error) {
