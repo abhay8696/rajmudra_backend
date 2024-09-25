@@ -29,17 +29,22 @@ const config = require("../config/config");
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
 const createPayment = async (paymentObject) => {
-    const { amount, shopId, paymentMethod, date } = paymentObject;
+    const { amount, shopNo, paymentMethod, date } = paymentObject;
     try {
         //find shop
-        const getShop = await Shop.findById(shopId);
+        const getShop = await Shop.find({ shopNo: shopNo });
 
         if (!getShop) throw new ApiError(httpStatus.OK, "Shop does not exist");
+        if (!getShop.length)
+            throw new ApiError(httpStatus.OK, "Shop does not exist, []");
 
-        const newPayment = await Payment.create(paymentObject);
+        const newPayment = await Payment.create({
+            ...paymentObject,
+            shopId: getShop[0]._id,
+        });
 
         // Update the shop's payment history
-        await Shop.findByIdAndUpdate(shopId, {
+        await Shop.findByIdAndUpdate(getShop[0]._id, {
             $push: { paymentHistory: newPayment._id }, // Add the payment ID to the shop's payment history
         });
 
@@ -77,7 +82,9 @@ const createPayment = async (paymentObject) => {
  */
 const getPaymentById = async (paymentId) => {
     try {
-        const payment = await Payment.findById(paymentId);
+        let payment;
+        if (paymentId == "all") payment = await Payment.find();
+        else payment = await Payment.findById(paymentId);
 
         if (payment) return payment;
 

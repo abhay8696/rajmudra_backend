@@ -15,6 +15,10 @@ const PaymentSchema = mongoose.Schema({
     shopId: {
         type: mongoose.Schema.Types.ObjectId, // Reference to the Shops collection
         ref: "Shop",
+        // required: true,
+    },
+    shopNo: {
+        type: String, // Adding shopNo field to store the shop number
         required: true,
     },
     paymentMethod: {

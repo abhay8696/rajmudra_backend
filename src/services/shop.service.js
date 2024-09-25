@@ -104,7 +104,7 @@ const getShopsByCondition = async (key, val) => {
     try {
         let shops;
 
-        shops = await Shop.find({ [key]: val });
+        shops = await Shop.find({ [key]: val }).populate("paymentHistory");
         // console.log(shops);
 
         if (!shops) {
