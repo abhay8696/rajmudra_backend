@@ -73,7 +73,7 @@ const getShopById = async (id) => {
     try {
         let shop;
         if (id === "all") shop = await Shop.find();
-        else shop = await Shop.findById(id);
+        else shop = await Shop.findById(id).populate("paymentHistory");
         console.log(shop);
 
         if (!shop) {
@@ -87,6 +87,7 @@ const getShopById = async (id) => {
     }
 };
 
+// Function to get shops by condition e.g=> (ownerName, value) or (shopNo, value) etc
 /**
  * Fetches shops for a admin/super-admin
  * - Fetch shops from Mongo
@@ -103,7 +104,7 @@ const getShopsByCondition = async (key, val) => {
     try {
         let shops;
 
-        shops = await Shop.find({ [key]: val });
+        shops = await Shop.find({ [key]: val }).populate("paymentHistory");
         // console.log(shops);
 
         if (!shops) {
