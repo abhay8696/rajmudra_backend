@@ -27,6 +27,11 @@ const config = require("../config/config");
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
 const createShop = async (newShop) => {
+    if (newShop?.shopNo) newShop.shopNo = newShop.shopNo.toLowerCase();
+    if (newShop?.ownerName) newShop.ownerName = newShop.ownerName.toLowerCase();
+    if (newShop?.registrationNo)
+        newShop.registrationNo = newShop.registrationNo.toLowerCase();
+
     const { ownerName, shopNo, registrationNo } = newShop;
 
     try {
@@ -73,8 +78,11 @@ const getShopById = async (id) => {
     try {
         let shop;
         if (id === "all") shop = await Shop.find();
-        else shop = await Shop.findById(id).populate("paymentHistory");
-        console.log(shop);
+        else
+            shop = await Shop.findById(id)
+                .populate("paymentHistory")
+                .sort({ date: -1 }); // Sort payments by date (latest first);
+        // console.log(shop);
 
         if (!shop) {
             throw new ApiError(httpStatus.NOT_FOUND, "Shop does not exist");
@@ -104,7 +112,9 @@ const getShopsByCondition = async (key, val) => {
     try {
         let shops;
 
-        shops = await Shop.find({ [key]: val }).populate("paymentHistory");
+        shops = await Shop.find({ [key]: val.toLowerCase() }).populate(
+            "paymentHistory"
+        );
         // console.log(shops);
 
         if (!shops) {
@@ -127,6 +137,14 @@ const getShopsByCondition = async (key, val) => {
  * @throws {ApiError}
  */
 const updateShop = async (shopId, updateData) => {
+    if (updateData?.shopNo) updateData.shopNo = updateData.shopNo.toLowerCase();
+
+    if (updateData?.ownerName)
+        updateData.ownerName = updateData.ownerName.toLowerCase();
+
+    if (updateData?.registrationNo)
+        updateData.registrationNo = updateData.registrationNo.toLowerCase();
+
     try {
         // If the update includes shopNo, check if it's already taken
         if (updateData.shopNo) {
