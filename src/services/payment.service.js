@@ -29,6 +29,12 @@ const config = require("../config/config");
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
 const createPayment = async (paymentObject) => {
+    if (paymentObject?.shopNo)
+        paymentObject.shopNo = paymentObject.shopNo.toLowerCase();
+
+    if (paymentObject?.paymentMethod)
+        paymentObject.paymentMethod = paymentObject.paymentMethod.toLowerCase();
+
     const { amount, shopNo, paymentMethod, date } = paymentObject;
     try {
         //find shop
@@ -90,7 +96,11 @@ const createPayment = async (paymentObject) => {
 const getPaymentById = async (paymentId) => {
     try {
         let payment;
-        if (paymentId == "all") payment = await Payment.find();
+        if (paymentId == "all")
+            payment = await Payment.find().sort({
+                date: -1,
+            });
+        // Sort payments by date (latest first);
         else payment = await Payment.findById(paymentId);
 
         if (payment) return payment;
@@ -140,7 +150,10 @@ const getPaymentByCondition = async (key, val) => {
     try {
         let payments;
 
-        payments = await Payment.find({ [key]: val });
+        payments = await Payment.find({ [key]: val.toLowerCase() }).sort({
+            date: -1,
+        }); // Sort payments by date (latest first)
+
         // console.log(payments);
 
         if (!payments) {
@@ -165,6 +178,11 @@ const getPaymentByCondition = async (key, val) => {
  * @throws {ApiError}
  */
 const updatePayment = async (paymentId, updateData) => {
+    if (updateData?.shopNo) updateData.shopNo = updateData.shopNo.toLowerCase();
+
+    if (updateData?.paymentMethod)
+        updateData.paymentMethod = updateData.paymentMethod.toLowerCase();
+
     try {
         const updatedPayment = await Payment.findByIdAndUpdate(
             paymentId,
